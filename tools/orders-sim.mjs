@@ -8,8 +8,8 @@ function attempt(order, alloy, rerolls) {
   if (O.matchesOrder(order, plate, sc)) return true;
   for (let r = 0; r < rerolls; r++) {
     const holds = [false, false, false, false, false, false];
-    if (order.twins && plate.letters[0] === plate.letters[1]) { holds[0] = true; holds[1] = true; }
-    for (let i = 0; i < 4; i++) if (order.mask[i] !== null && plate.digits[i] === order.mask[i]) holds[2 + i] = true;
+    if (order.twins && plate.letters[1] === plate.letters[2]) { holds[4] = true; holds[5] = true; }
+    for (let i = 0; i < 3; i++) if (order.mask[i] !== null && plate.digits[i] === order.mask[i]) holds[1 + i] = true;
     plate = P.rerollPlate(Math.random, plate, holds, { alloy });
     sc = P.scorePlate(plate, {});
     if (O.matchesOrder(order, plate, sc)) return true;

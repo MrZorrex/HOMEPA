@@ -246,7 +246,7 @@ function buildStaticUI() {
   const row = $('holdRow');
   row.innerHTML = '';
   for (let i = 0; i < 6; i++) {
-    if (i === 2) row.appendChild(el('div', 'hold-dot spacer'));
+    if (i === 1 || i === 4) row.appendChild(el('div', 'hold-dot spacer'));
     const b = el('button', 'hold-dot', '○');
     b.onclick = () => toggleHold(i);
     row.appendChild(b);
@@ -303,10 +303,17 @@ function doSpin() {
   });
 }
 
+/** Случайный символ для позиции: буква или цифра в зависимости от слота. */
+function randomSymbolFor(i) {
+  return P.isLetterSlot(i)
+    ? P.LETTERS[Math.floor(Math.random() * P.LETTERS.length)]
+    : String(Math.floor(Math.random() * 10));
+}
+
 /** Барабаны останавливаются по очереди слева направо, последний — медленнее. */
 function animateReels(target, totalMs, done) {
   const syms = Array.from(document.querySelectorAll('#plate .sym'));
-  const final = [target.letters[0], target.letters[1], ...target.digits.map(String)];
+  const final = P.symbolsOf(target);
   const stopAt = [0.42, 0.52, 0.62, 0.72, 0.84, 1].map((f) => f * totalMs);
   const start = performance.now();
   const stopped = [false, false, false, false, false, false];
@@ -334,9 +341,7 @@ function animateReels(target, totalMs, done) {
       const progress = dt / stopAt[i];
       const period = 40 + progress * progress * 140;
       if (now - lastTick > period / 6) {
-        syms[i].textContent = i < 2
-          ? P.LETTERS[Math.floor(Math.random() * P.LETTERS.length)]
-          : String(Math.floor(Math.random() * 10));
+        syms[i].textContent = randomSymbolFor(i);
       }
     }
     if (now - lastTick > 24) lastTick = now;
@@ -439,7 +444,7 @@ function doReroll() {
 
 function animateRerollOnly(target, ms, done) {
   const syms = Array.from(document.querySelectorAll('#plate .sym'));
-  const final = [target.letters[0], target.letters[1], ...target.digits.map(String)];
+  const final = P.symbolsOf(target);
   const start = performance.now();
   function frame(now) {
     const dt = now - start;
@@ -451,9 +456,7 @@ function animateRerollOnly(target, ms, done) {
         syms[i].classList.remove('rolling');
       } else {
         syms[i].classList.add('rolling');
-        syms[i].textContent = i < 2
-          ? P.LETTERS[Math.floor(Math.random() * P.LETTERS.length)]
-          : String(Math.floor(Math.random() * 10));
+        syms[i].textContent = randomSymbolFor(i);
       }
     }
     if (p >= 1) {
@@ -1023,13 +1026,13 @@ function renderSeason() {
   const code = seasonDistrict();
   const note = $('seasonNote');
   note.classList.remove('hidden');
-  note.textContent = `${t('spin.season')} — ${t(`d${code}`)} (${code})`;
+  note.textContent = `${t('spin.season')} — ${t(P.districtKey(code))} (${code})`;
 }
 
 function renderPlate() {
   const syms = Array.from(document.querySelectorAll('#plate .sym'));
   if (session.plate) {
-    const vals = [session.plate.letters[0], session.plate.letters[1], ...session.plate.digits.map(String)];
+    const vals = P.symbolsOf(session.plate);
     syms.forEach((n, i) => {
       if (!session.spinning) n.textContent = vals[i];
       n.classList.toggle('locked', session.holds[i]);
@@ -1180,7 +1183,7 @@ function renderOrders() {
     if (o.mask.some((v) => v !== null)) {
       parts.push(`${t('orders.mask')}: <b>${Orders.maskText(o)}</b>`);
     }
-    if (o.district) parts.push(`${t('orders.district')}: <b>${t(`d${o.district}`)} (${o.district})</b>`);
+    if (o.district) parts.push(`${t('orders.district')}: <b>${t(P.districtKey(o.district))} (${o.district})</b>`);
     if (o.minTier) parts.push(`${t('orders.minTier')}: <b>${t(`tier.${o.minTier}`)}</b>`);
     if (o.twins) parts.push(`<b>${t('orders.twins')}</b>`);
     parts.push(`${t('orders.reward')}: <b>×${o.mult}</b>`);

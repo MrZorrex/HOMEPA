@@ -10,7 +10,7 @@ import * as Eco from './economy.js';
 import { collectionBonuses } from './collections.js';
 import { todayKey, weekKey, seasonDistrict, makeDailyTasks } from './daily.js';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export function defaultState() {
   return {
@@ -73,6 +73,20 @@ export function migrate(saved) {
   out.setsClaimed = saved.setsClaimed || [];
   out.storage = Array.isArray(saved.storage) ? saved.storage : [];
   out.orders = Array.isArray(saved.orders) ? saved.orders : [];
+
+  // Формат знака изменился: старые знаки и заказы несовместимы, но валюту,
+  // апгрейды и статистику игрока сохраняем — прогресс не обнуляется (п.1.9).
+  if ((saved.v || 1) < 2) {
+    for (const item of out.storage) {
+      out.credits += 40;
+    }
+    out.storage = [];
+    out.orders = [];
+    out.collections = {};
+    out.setsClaimed = [];
+    out.home = null;
+  }
+
   out.v = SAVE_VERSION;
   return out;
 }

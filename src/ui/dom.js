@@ -69,15 +69,20 @@ export function closeModal() {
 export function plateCard(plate, tierColor) {
   const node = el('div', 'plate modal-plate');
   node.innerHTML = `
+    <div class="plate-band">
+      <span class="plate-flag"><i></i><i></i><i></i></span>
+      <span class="plate-country">SUR</span>
+    </div>
     <div class="plate-main">
       <span class="sym">${plate.letters[0]}</span>
-      <span class="sym">${plate.letters[1]}</span>
       <span class="gap"></span>
       ${plate.digits.map((d) => `<span class="sym">${d}</span>`).join('')}
+      <span class="gap"></span>
+      <span class="sym">${plate.letters[1]}</span>
+      <span class="sym">${plate.letters[2]}</span>
     </div>
     <div class="plate-side">
       <span class="plate-code">${plate.district}</span>
-      <span class="plate-region">VCT</span>
     </div>`;
   if (tierColor) node.style.boxShadow = `0 0 30px ${tierColor}55, 0 10px 30px rgba(0,0,0,.5)`;
   return node;

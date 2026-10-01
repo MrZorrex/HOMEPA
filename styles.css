@@ -128,58 +128,98 @@ body::before {
 .nav-btn.locked { opacity: .3; pointer-events: none; }
 
 /* ---------- Знак ---------- */
+/* Формат: буква — три цифры — две буквы — код округа.
+   Узнаваемый силуэт, но флаг вынесен в левую полосу, а код страны — SUR. */
 .plate-stage { margin: 6px 0 2px; }
 
 .plate {
-  display: flex; align-items: stretch; gap: 0;
-  background: linear-gradient(180deg, #f4f6ff, #d8ddf0);
-  border-radius: 12px;
-  padding: 10px 8px 10px 14px;
-  box-shadow: 0 10px 34px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.8);
-  border: 2px solid rgba(255,255,255,.3);
+  display: flex; align-items: stretch;
+  background: linear-gradient(180deg, #ffffff, #e9ecf5);
+  border-radius: 9px;
+  padding: 0;
+  box-shadow: 0 10px 34px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.9);
+  border: 2px solid #11131f;
   position: relative; overflow: hidden;
+  min-height: 74px;
 }
 .plate::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
-  transform: translateX(-120%);
+  background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.6) 50%, transparent 65%);
+  transform: translateX(-120%); pointer-events: none;
 }
 .plate.flash::after { animation: sheen .7s ease-out; }
 @keyframes sheen { to { transform: translateX(120%); } }
 
-.plate-main {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 1px;
+/* Левая полоса: триколор белый-красный-синий и код страны */
+.plate-band {
+  flex: 0 0 auto;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: 34px; padding: 6px 3px;
+  background: #11131f;
+  border-right: 2px solid #11131f;
 }
+.plate-flag {
+  display: flex; flex-direction: column;
+  width: 22px; height: 15px; border-radius: 2px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.55);
+}
+.plate-flag i { flex: 1; }
+.plate-flag i:nth-child(1) { background: #ffffff; }
+.plate-flag i:nth-child(2) { background: #e4352b; }
+.plate-flag i:nth-child(3) { background: #1b3fae; }
+.plate-country {
+  color: #fff; font-weight: 800; font-size: 10px; letter-spacing: .1em; line-height: 1;
+}
+
+.plate-main {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 0;
+  padding: 6px 4px;
+}
+
+/* Шрифт знака: узкий высокий гротеск — похоже на дорожный, но не копия */
 .sym {
   color: #10121f;
-  font-weight: 900;
-  font-size: clamp(30px, 11.5vw, 56px);
+  font-family: "Arial Narrow", "Liberation Sans Narrow", "Helvetica Neue Condensed",
+               "Roboto Condensed", Arial, sans-serif;
+  font-weight: 700;
+  font-stretch: condensed;
+  font-size: clamp(34px, 12.5vw, 60px);
   line-height: 1;
-  min-width: 0.62em; text-align: center;
+  min-width: 0.58em; text-align: center;
   font-variant-numeric: tabular-nums;
-  transition: transform .12s, color .12s;
+  transform: scaleY(1.14);
+  letter-spacing: .01em;
+  transition: color .12s, text-shadow .12s;
 }
-.sym.locked { color: var(--magenta); transform: translateY(-2px); }
-.sym.rolling { opacity: .75; }
-.gap { width: 10px; }
+.sym.locked { color: #d4145a; text-shadow: 0 0 14px rgba(212, 20, 90, .45); }
+.sym.rolling { opacity: .7; }
+.gap { width: 9px; flex: 0 0 auto; }
 
+/* Правый блок: код округа, меньшим кеглем, как на реальных знаках */
 .plate-side {
+  flex: 0 0 auto;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding-left: 10px; margin-left: 6px;
-  border-left: 3px solid #10121f;
-  min-width: 62px;
+  padding: 6px 9px;
+  border-left: 2px solid #11131f;
+  min-width: 58px;
 }
-.plate-code { color: #10121f; font-weight: 900; font-size: clamp(20px, 7vw, 32px); line-height: 1; font-variant-numeric: tabular-nums; }
-.plate-region { color: #10121f; font-weight: 700; font-size: 11px; letter-spacing: .12em; }
+.plate-code {
+  color: #10121f;
+  font-family: "Arial Narrow", "Liberation Sans Narrow", "Roboto Condensed", Arial, sans-serif;
+  font-weight: 700; font-stretch: condensed;
+  font-size: clamp(22px, 7.5vw, 36px); line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transform: scaleY(1.14);
+}
 
-.hold-row { display: flex; gap: 1px; justify-content: center; margin-top: 8px; padding-right: 68px; }
+.hold-row { display: flex; gap: 0; justify-content: center; margin-top: 8px; padding-left: 34px; padding-right: 58px; }
 .hold-dot {
-  width: 0.62em; min-width: 26px; height: 22px;
+  min-width: 0.58em; width: 26px; height: 22px;
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; color: var(--muted); background: none; border: 0; cursor: pointer;
 }
 .hold-dot.on { color: var(--magenta); }
-.hold-dot.spacer { min-width: 10px; pointer-events: none; }
+.hold-dot.spacer { min-width: 9px; width: 9px; pointer-events: none; }
 
 .shake { animation: shake .4s cubic-bezier(.36,.07,.19,.97); }
 @keyframes shake {

@@ -3,7 +3,7 @@
  * именно это даёт игроку причину НЕ продавать редкий знак.
  */
 
-import { DISTRICTS, numberOf } from './plate.js';
+import { LETTERS, DISTRICT_GROUPS, numberOf } from './plate.js';
 
 function rangeSlots(from, to) {
   const out = [];
@@ -13,16 +13,17 @@ function rangeSlots(from, to) {
 
 export const SETS = [
   {
-    id: 'quads',
+    id: 'triples',
     slots: rangeSlots(0, 9),
     reward: { type: 'rarity', value: 0.05 },
-    keyOf: (p, sc) => (sc.tags.includes('quad') ? String(p.digits[0]) : null),
+    keyOf: (p, sc) => (sc.tags.includes('triple') ? String(p.digits[0]) : null),
   },
   {
     id: 'twins',
-    slots: ['A', 'B', 'E', 'K', 'M', 'H', 'O', 'P', 'C', 'T', 'X'],
+    slots: [...LETTERS],
     reward: { type: 'sell', value: 0.05 },
-    keyOf: (p, sc) => (sc.tags.includes('twins') ? p.letters[0] : null),
+    keyOf: (p, sc) =>
+      sc.tags.includes('twins') || sc.tags.includes('letters3') ? p.letters[2] : null,
   },
   {
     id: 'low',
@@ -44,7 +45,10 @@ export const SETS = [
   },
   {
     id: 'stairs',
-    slots: ['u0', 'u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9'],
+    slots: [
+      'u0', 'u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7',
+      'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9',
+    ],
     reward: { type: 'order', value: 1 },
     keyOf: (p, sc) => {
       if (sc.tags.includes('stairUp')) return `u${p.digits[0]}`;
@@ -54,21 +58,21 @@ export const SETS = [
   },
   {
     id: 'north',
-    slots: DISTRICTS.slice(0, 8).map((d) => d.code),
+    slots: DISTRICT_GROUPS.north,
     reward: { type: 'sell', value: 0.03 },
-    keyOf: (p) => (Number(p.district) <= 8 ? p.district : null),
+    keyOf: (p) => (DISTRICT_GROUPS.north.includes(p.district) ? p.district : null),
   },
   {
     id: 'south',
-    slots: DISTRICTS.slice(8, 16).map((d) => d.code),
+    slots: DISTRICT_GROUPS.south,
     reward: { type: 'storage', value: 15 },
-    keyOf: (p) => (Number(p.district) > 8 && Number(p.district) <= 16 ? p.district : null),
+    keyOf: (p) => (DISTRICT_GROUPS.south.includes(p.district) ? p.district : null),
   },
   {
     id: 'east',
-    slots: DISTRICTS.slice(16, 24).map((d) => d.code),
+    slots: DISTRICT_GROUPS.east,
     reward: { type: 'rarity', value: 0.03 },
-    keyOf: (p) => (Number(p.district) > 16 ? p.district : null),
+    keyOf: (p) => (DISTRICT_GROUPS.east.includes(p.district) ? p.district : null),
   },
 ];
 

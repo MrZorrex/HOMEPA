@@ -32,7 +32,7 @@ export function makeOrder(rng, difficulty = 0) {
     id: `o${Date.now().toString(36)}${idCounter++}`,
     client: client.id,
     kind,
-    mask: [null, null, null, null],
+    mask: [null, null, null],
     district: null,
     minTier: null,
     twins: false,
@@ -45,7 +45,7 @@ export function makeOrder(rng, difficulty = 0) {
     // Не больше двух зафиксированных цифр: с рероллами такую маску реально добить,
     // а три цифры превращали заказ в лотерею 1 к 1000.
     const count = difficulty >= 2 && rng() < 0.45 ? 2 : 1;
-    const positions = [0, 1, 2, 3].sort(() => rng() - 0.5).slice(0, count);
+    const positions = [0, 1, 2].sort(() => rng() - 0.5).slice(0, count);
     const value = randInt(rng, 0, 9);
     for (const p of positions) order.mask[p] = rng() < 0.75 ? value : randInt(rng, 0, 9);
     order.spinsLeft = count === 2 ? randInt(rng, 16, 24) : randInt(rng, 8, 13);
@@ -75,11 +75,11 @@ export function makeOrder(rng, difficulty = 0) {
 
 /** Подходит ли знак под заказ. */
 export function matchesOrder(order, plate, scored) {
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     if (order.mask[i] !== null && plate.digits[i] !== order.mask[i]) return false;
   }
   if (order.district && plate.district !== order.district) return false;
-  if (order.twins && plate.letters[0] !== plate.letters[1]) return false;
+  if (order.twins && plate.letters[1] !== plate.letters[2]) return false;
   if (order.minTier) {
     const need = tierRank(order.minTier);
     const got = tierRank(tierOf(scored.index).id);
