@@ -78,6 +78,45 @@ export const Platform = {
     }
   },
 
+  /** Лидерборды: инициализируются лениво при первом обращении. */
+  async getLeaderboards() {
+    if (!this.available) return null;
+    if (this._lb !== undefined) return this._lb;
+    try {
+      this._lb = await this.sdk.getLeaderboards();
+    } catch (e) {
+      this._lb = null;
+    }
+    return this._lb;
+  },
+
+  /** Отправить результат. Работает только для авторизованного игрока. */
+  async setScore(name, score) {
+    const lb = await this.getLeaderboards();
+    if (!lb) return false;
+    try {
+      await lb.setLeaderboardScore(name, score);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  /** Получить верхушку таблицы вместе с позицией игрока. */
+  async getEntries(name, quantityTop = 10) {
+    const lb = await this.getLeaderboards();
+    if (!lb) return null;
+    try {
+      return await lb.getLeaderboardEntries(name, {
+        quantityTop,
+        includeUser: true,
+        quantityAround: 3,
+      });
+    } catch (e) {
+      return null;
+    }
+  },
+
   /** Тип устройства: desktop | mobile | tablet | tv */
   getDeviceType() {
     try {

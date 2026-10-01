@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0b1a">
+<title>NOMERON</title>
+<link rel="icon" href="assets/icon.png">
+<link rel="stylesheet" href="styles.css">
+<!-- SDK Яндекс Игр подключается строго так, как указано в документации (п.1.19.1). -->
+<script src="/sdk.js"></script>
+</head>
+<body>
+
+<div id="boot" class="boot">
+  <div class="boot-logo">NOMERON</div>
+  <div class="boot-bar"><i></i></div>
+</div>
+
+<div id="app" class="app hidden">
+
+  <header class="hud">
+    <div class="hud-res" id="hudCredits"><span class="ico">💳</span><b>0</b></div>
+    <div class="hud-res" id="hudSparks"><span class="ico">✨</span><b>0</b></div>
+    <div class="hud-spacer"></div>
+    <button class="icon-btn" id="btnShop" aria-label="Shop">🛒</button>
+    <button class="icon-btn" id="btnSettings" aria-label="Settings">⚙️</button>
+  </header>
+
+  <main class="screens">
+
+    <!-- ЦЕХ -->
+    <section class="screen active" id="screen-spin">
+      <div class="season-note hidden" id="seasonNote"></div>
+
+      <div class="plate-stage" id="plateStage">
+        <div class="plate" id="plate">
+          <div class="plate-main">
+            <span class="sym" data-i="0">A</span>
+            <span class="sym" data-i="1">A</span>
+            <span class="gap"></span>
+            <span class="sym" data-i="2">0</span>
+            <span class="sym" data-i="3">0</span>
+            <span class="sym" data-i="4">0</span>
+            <span class="sym" data-i="5">0</span>
+          </div>
+          <div class="plate-side">
+            <span class="plate-code" id="plateCode">01</span>
+            <span class="plate-region" id="plateRegion">VCT</span>
+          </div>
+        </div>
+        <div class="hold-row" id="holdRow"></div>
+      </div>
+
+      <div class="verdict" id="verdict">
+        <div class="verdict-tier" id="verdictTier">—</div>
+        <div class="verdict-tags" id="verdictTags"></div>
+        <div class="verdict-nums">
+          <span id="verdictIndex"></span>
+          <span id="verdictPrice"></span>
+        </div>
+      </div>
+
+      <div class="hint" id="spinHint"></div>
+
+      <div class="actions">
+        <button class="btn btn-reroll" id="btnReroll" disabled></button>
+        <button class="btn btn-primary btn-spin" id="btnSpin">SPIN</button>
+        <div class="row">
+          <button class="btn btn-ghost" id="btnSell" disabled></button>
+          <button class="btn btn-ghost" id="btnStore" disabled></button>
+        </div>
+        <button class="btn btn-deliver hidden" id="btnDeliver"></button>
+      </div>
+
+      <div class="autospin hidden" id="autospinBox">
+        <label class="switch">
+          <input type="checkbox" id="autospinToggle">
+          <span class="slider"></span>
+          <span class="switch-label" id="autospinLabel"></span>
+        </label>
+        <div class="autospin-row">
+          <span id="thresholdLabel"></span>
+          <select id="thresholdSelect"></select>
+        </div>
+      </div>
+
+      <div class="vault-peek">
+        <div class="vault-head">
+          <span id="vaultTitle"></span>
+          <span id="vaultCount" class="muted"></span>
+        </div>
+        <div class="vault-list" id="vaultList"></div>
+      </div>
+    </section>
+
+    <!-- ЗАКАЗЫ -->
+    <section class="screen" id="screen-orders">
+      <h2 id="ordersTitle"></h2>
+      <div class="order-list" id="orderList"></div>
+    </section>
+
+    <!-- КОЛЛЕКЦИЯ -->
+    <section class="screen" id="screen-collection">
+      <h2 id="collectionTitle"></h2>
+      <p class="muted" id="collectionHint"></p>
+      <div class="set-list" id="setList"></div>
+    </section>
+
+    <!-- МАСТЕРСКАЯ -->
+    <section class="screen" id="screen-workshop">
+      <h2 id="workshopTitle"></h2>
+      <div class="up-list" id="upList"></div>
+    </section>
+
+    <!-- ЗНАК ДНЯ -->
+    <section class="screen" id="screen-daily">
+      <h2 id="dailyTitle"></h2>
+      <p class="muted" id="dailyDesc"></p>
+
+      <div class="daily-box">
+        <div class="daily-stats">
+          <span id="dailyAttempts"></span>
+          <span id="dailyBest"></span>
+        </div>
+        <button class="btn btn-primary" id="btnDailySpin"></button>
+        <button class="btn btn-rv" id="btnDailyExtra"></button>
+      </div>
+
+      <h3 id="lbTitle"></h3>
+      <div class="lb" id="lbList"></div>
+
+      <h3 id="tasksTitle"></h3>
+      <div class="task-list" id="taskList"></div>
+
+      <h3 id="streakTitle"></h3>
+      <div class="streak" id="streakRow"></div>
+    </section>
+
+  </main>
+
+  <nav class="nav" id="nav">
+    <button class="nav-btn active" data-screen="spin"><span>🎰</span><i id="navSpin"></i></button>
+    <button class="nav-btn locked" data-screen="orders"><span>📋</span><i id="navOrders"></i></button>
+    <button class="nav-btn locked" data-screen="collection"><span>🏆</span><i id="navCollection"></i></button>
+    <button class="nav-btn locked" data-screen="workshop"><span>🔧</span><i id="navWorkshop"></i></button>
+    <button class="nav-btn locked" data-screen="daily"><span>📅</span><i id="navDaily"></i></button>
+  </nav>
+</div>
+
+<canvas id="fx" class="fx"></canvas>
+<div id="toasts" class="toasts"></div>
+
+<div id="modalRoot" class="modal-root hidden">
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal" id="modal"></div>
+</div>
+
+<div id="tutorial" class="tutorial hidden">
+  <div class="tutorial-text" id="tutorialText"></div>
+</div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
